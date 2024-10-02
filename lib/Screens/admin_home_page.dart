@@ -15,8 +15,8 @@ class HomePageState extends State<HomePage> {
   final List<Widget> _screens = [
     LawyersProfilePage(),
     PackagesPage(),
-    UserFeedbackPage(),
-    AdminLogoutScreen(),
+    FeedbackPage(),
+    LogoutScreen(),
   ];
 
   @override

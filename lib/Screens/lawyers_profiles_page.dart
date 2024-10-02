@@ -19,12 +19,14 @@ class _LawyersProfilePageState extends State<LawyersProfilePage> {
       profile: Profile(
         name: 'John Doe',
         email: 'john.doe@example.com',
-        licenseNumber: 'ABC123',
-        yearsOfExperience: 10,
+        phone: '+923338171175',
+        password: 'Password',
+        firmName: 'XYZ',
+        ChamberAddress: '156 Main',
         specialization: 'Criminal Law',
         //photoUrl: 'path_to_photo.jpg',
-        officeAddress: '123 Main Street',
-        courtAffiliation: 'Supreme Court'
+        courtAffiliation: 'Supreme Court',
+        package: 'pro'
 
       ),
       clients: [
@@ -35,11 +37,16 @@ class _LawyersProfilePageState extends State<LawyersProfilePage> {
           phone: "+923338171175",
           address: '123 Main St',
           onboardDate: DateTime.now(),
+          clientType: 'Individual',
           caseList: [
             Case(
               caseId: 'CA001',
               clientId: 'C001',
               caseTitle: 'Theft Case',
+              officeFileNumber: '009',
+              court: 'Supreme Court',
+              courtCaseNumber: '307',
+              judgeName: 'Jhony',
               caseDescription: 'A theft case description',
               status: 'open',
               startDate: DateTime.now(),
@@ -54,6 +61,10 @@ class _LawyersProfilePageState extends State<LawyersProfilePage> {
           caseId: 'CA001',
           clientId: 'C001',
           caseTitle: 'Theft Case',
+          officeFileNumber: '009',
+          court: 'Supreme Court',
+          courtCaseNumber: '307',
+          judgeName: 'Jhony',
           caseDescription: 'A theft case description',
           status: 'open',
           startDate: DateTime.now(),

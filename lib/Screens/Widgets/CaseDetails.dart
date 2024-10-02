@@ -15,11 +15,11 @@ class CaseDetails extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Description"),
+          Text("Description",textAlign: TextAlign.center,style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Color(0xFF4DB6AC))),
           Text(Description),
-          Text("Lawyers Notes"),
+          Text("Lawyers Notes",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Color(0xFF4DB6AC))),
           Text(LawyerNotes),
-          Text("Hearing Dates"),
+          Text("Hearing Dates",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Color(0xFF4DB6AC))),
           Expanded(
             child: ListView.builder(
                 itemCount: hearingDate.length,

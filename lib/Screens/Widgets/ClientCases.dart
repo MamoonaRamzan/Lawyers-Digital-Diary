@@ -46,6 +46,24 @@ class ClientCases extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        Text("Court ",style: TextStyle(
+                            fontWeight:FontWeight.bold
+                        ),),
+                        Text(clientCase[index].court),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Judge Name",style: TextStyle(
+                            fontWeight:FontWeight.bold
+                        ),),
+                        Text(clientCase[index].judgeName),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
                         Text("Start Date",style: TextStyle(
                             fontWeight:FontWeight.bold
                         ),),

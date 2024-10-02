@@ -17,11 +17,11 @@ class SheduleTab extends StatelessWidget {
       itemBuilder: (context, index) {
         final schedule = schedules[index];
         return ListTile(
-          title: Text(schedule.description),
+          title: Text(schedule.description,style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color:Color(0xFF4DB6AC) ),),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Date: ${schedule.dateTime}'),
+              Text('Date: ${schedule.dateTime.day}-${schedule.dateTime.month}-${schedule.dateTime.year}'),
               Text('Location: ${schedule.location}'),
             ],
           ),

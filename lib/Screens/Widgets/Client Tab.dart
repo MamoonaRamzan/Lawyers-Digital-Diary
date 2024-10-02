@@ -115,6 +115,15 @@ class _ClientsPageState extends State<ClientsPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            Text("Client Type",style: TextStyle(
+                                fontWeight:FontWeight.bold
+                            ),),
+                            Text(client.clientType),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
                             Text("Email ",style: TextStyle(
                               fontWeight:FontWeight.bold
                             ),),
@@ -139,8 +148,9 @@ class _ClientsPageState extends State<ClientsPage> {
                             Text(client.onboardDate.day.toString()+"-"+client.onboardDate.month.toString()+"-"+client.onboardDate.year.toString()),
                           ],
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text("Address ",style: TextStyle(
                                 fontWeight:FontWeight.bold

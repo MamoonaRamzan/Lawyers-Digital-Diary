@@ -118,6 +118,42 @@ class _CasesTabState extends State<CasesTab> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            Text("Office File No",style: TextStyle(
+                                fontWeight:FontWeight.bold
+                            ),),
+                            Text(Case.officeFileNumber),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("Court",style: TextStyle(
+                                fontWeight:FontWeight.bold
+                            ),),
+                            Text(Case.court),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("Court Case Number",style: TextStyle(
+                                fontWeight:FontWeight.bold
+                            ),),
+                            Text(Case.courtCaseNumber),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("Judge Name",style: TextStyle(
+                                fontWeight:FontWeight.bold
+                            ),),
+                            Text(Case.judgeName),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
                             Text("Status",style: TextStyle(
                                 fontWeight:FontWeight.bold
                             ),),

@@ -9,6 +9,7 @@ class Lawyer {
   List<Case> cases;
   List<Schedule> schedule;
 
+
   Lawyer({
     required this.profile,
     required this.clients,

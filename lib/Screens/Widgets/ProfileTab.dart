@@ -67,8 +67,8 @@ class ProfileTab extends StatelessWidget {
             ),
             TableRow(
               children: [
-                Text(' Bar Number', style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold)),
-                Text('${profile.licenseNumber}', style: TextStyle(fontSize: 18)),
+                Text(' Phone', style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold)),
+                Text('${profile.phone}', style: TextStyle(fontSize: 18)),
               ],
             ),
             TableRow(
@@ -77,16 +77,22 @@ class ProfileTab extends StatelessWidget {
                 Text('${profile.specialization}', style: TextStyle(fontSize: 18)),
               ],
             ),
+            /*TableRow(
+              children: [
+                Text(' No of Cases', style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold)),
+                Text('${profile.activeCases.toString()} years', style: TextStyle(fontSize: 18)),
+              ],
+            ),*/
             TableRow(
               children: [
-                Text(' Experience', style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold)),
-                Text('${profile.yearsOfExperience} years', style: TextStyle(fontSize: 18)),
+                Text(' Firm', style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold)),
+                Text('${profile.firmName}', style: TextStyle(fontSize: 18)),
               ],
             ),
             TableRow(
               children: [
                 Text(' Office Address', style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold)),
-                Text('${profile.officeAddress}', style: TextStyle(fontSize: 18)),
+                Text('${profile.ChamberAddress}', style: TextStyle(fontSize: 18)),
               ],
             ),
             TableRow(

@@ -5,6 +5,7 @@ class Client {
   String email;
   String phone;
   String address;
+  String clientType;
   DateTime onboardDate;
   List<Case> caseList;
 
@@ -16,5 +17,6 @@ class Client {
     required this.address,
     required this.onboardDate,
     required this.caseList,
+    required this.clientType
   });
 }
