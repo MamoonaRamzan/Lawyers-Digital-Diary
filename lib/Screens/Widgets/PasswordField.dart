@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+
 class PasswordField extends StatefulWidget {
-  PasswordField({super.key});
+  final TextEditingController passwordController;
+  PasswordField({required this.passwordController});
 
   @override
   State<PasswordField> createState() => _PasswordFieldState();
@@ -8,12 +10,14 @@ class PasswordField extends StatefulWidget {
 
 class _PasswordFieldState extends State<PasswordField> {
   bool _isObscure = true;
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 50,
       width: 267,
       child: TextField(
+        controller: widget.passwordController, // Accessing controller via widget
         obscureText: _isObscure,
         decoration: InputDecoration(
           hintText: "Enter Password",
@@ -55,3 +59,4 @@ class _PasswordFieldState extends State<PasswordField> {
     );
   }
 }
+

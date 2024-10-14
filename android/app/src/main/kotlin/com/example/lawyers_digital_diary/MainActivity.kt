@@ -1,4 +1,4 @@
-package com.example.lawyers_digital_diary
+package com.devlogix.technology
 
 import io.flutter.embedding.android.FlutterActivity
 

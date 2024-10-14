@@ -39,12 +39,15 @@ class AdminLogoutScreen extends StatelessWidget {
     );
   }
 }*/
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lawyers_digital_diary/Screens/admin_home_page.dart';
+import 'package:lawyers_digital_diary/Utils/utils.dart';
 
 import 'admin_login_screen.dart';
 
 class LogoutScreen extends StatelessWidget {
+  final _auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -85,12 +88,16 @@ class LogoutScreen extends StatelessWidget {
                     ),
                   ),
                   onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AdminLoginScreen(),
-                      ),
-                    );
+                    _auth.signOut().then((value){
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AdminLoginScreen(),
+                        ),
+                      );
+                    }).onError((error, stackTrace){
+                     Utils().toastMessage(error.toString());
+                    });
                   },
                   child: Text(
                     'Yes',
