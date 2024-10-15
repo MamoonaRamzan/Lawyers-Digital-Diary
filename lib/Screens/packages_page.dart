@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:lawyers_digital_diary/FirebaseServices/fetch_data.dart';
 import '../Model/Package.dart';
 
 class PackagesPage extends StatefulWidget {
@@ -8,26 +8,19 @@ class PackagesPage extends StatefulWidget {
 }
 
 class _PackagesPageState extends State<PackagesPage> {
-  List<Package> packages = [
-    Package(id: '1', name: 'Basic Plan', price: 9.99, features: ['Feature A', 'Feature B']),
-    Package(id: '2', name: 'Pro Plan', price: 19.99, features: ['Feature A', 'Feature B', 'Feature C']),
-    Package(id: '3', name: 'Enterprise Plan', price: 49.99, features: ['Feature A', 'Feature B', 'Feature C', 'Feature D']),
-  ];
+  FetchData data = FetchData();
 
   // Function to update a pricing plan
   void updatePricingPlan(Package updatedPlan) {
     setState(() {
-      int index = packages.indexWhere((plan) => plan.id == updatedPlan.id);
-      if (index != -1) {
-        packages[index] = updatedPlan;
-      }
+      // You would want to use a state management solution or update the data in Firestore
     });
   }
 
   // Function to delete a pricing plan
   void deletePricingPlan(String id) {
     setState(() {
-      packages.removeWhere((plan) => plan.id == id);
+      // You would want to implement the deletion logic in Firestore as well
     });
   }
 
@@ -37,39 +30,52 @@ class _PackagesPageState extends State<PackagesPage> {
       appBar: AppBar(
         title: Text('Pricing Plans'),
       ),
-      body: ListView.builder(
-        itemCount: packages.length,
-        itemBuilder: (context, index) {
-          final plan = packages[index];
-          return Card(
-            child: ListTile(
-              title: Text(plan.name),
-              subtitle: Text('\$${plan.price.toStringAsFixed(2)}'),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.edit),
-                    onPressed: () {
-                      // Navigate to the update page or dialog
-                      _showEditDialog(plan);
-                    },
+      body: FutureBuilder<List<Package>>(
+        future: data.fetchPackages(), // Fetch packages here
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('No packages available.'));
+          }
+
+          final packages = snapshot.data!; // Get the data
+
+          return ListView.builder(
+            itemCount: packages.length,
+            itemBuilder: (context, index) {
+              final plan = packages[index];
+              return Card(
+                child: ListTile(
+                  title: Text(plan.name),
+                  subtitle: Text('\$${plan.price.toStringAsFixed(2)}'),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () {
+                          _showEditDialog(plan);
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () {
+                          deletePricingPlan(plan.id.toString());
+                        },
+                      ),
+                    ],
                   ),
-                  IconButton(
-                    icon: Icon(Icons.delete),
-                    onPressed: () {
-                      deletePricingPlan(plan.id);
-                    },
-                  ),
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Add a new pricing plan
           _showAddDialog();
         },
         child: Icon(Icons.add),
@@ -90,7 +96,7 @@ class _PackagesPageState extends State<PackagesPage> {
           title: Text('Add Pricing Plan'),
           content: SingleChildScrollView(
             child: Column(
-              mainAxisSize: MainAxisSize.min, // This ensures the dialog doesn't take up the whole height
+              mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   onChanged: (value) => name = value,
@@ -110,9 +116,7 @@ class _PackagesPageState extends State<PackagesPage> {
               onPressed: () {
                 if (name.isNotEmpty) {
                   setState(() {
-                    packages.add(
-                      Package(id: DateTime.now().toString(), name: name, price: price, features: features),
-                    );
+                    // You would want to implement the logic to add the new plan to Firestore here
                   });
                 }
                 Navigator.of(context).pop();
@@ -121,7 +125,6 @@ class _PackagesPageState extends State<PackagesPage> {
             ),
           ],
         );
-
       },
     );
   }
@@ -138,7 +141,7 @@ class _PackagesPageState extends State<PackagesPage> {
           title: Text('Edit Pricing Plan'),
           content: SingleChildScrollView(
             child: Column(
-              mainAxisSize: MainAxisSize.min, // Ensures the dialog takes only the required height
+              mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   onChanged: (value) => name = value,
@@ -164,9 +167,9 @@ class _PackagesPageState extends State<PackagesPage> {
             ),
           ],
         );
-
       },
     );
   }
 }
+
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 class CaseDetails extends StatelessWidget {
-  final List <DateTime> hearingDate;
+  final List <String> hearingDate;
   final String CaseTiltle;
   final String Description;
   final String LawyerNotes;
@@ -24,7 +24,7 @@ class CaseDetails extends StatelessWidget {
             child: ListView.builder(
                 itemCount: hearingDate.length,
                 itemBuilder: (context,index){
-                  return Text(hearingDate[index].day.toString()+"-"+hearingDate[index].month.toString()+"-"+hearingDate[index].year.toString());
+                  return Text(hearingDate[index]);
                 }),
           ),
         ],

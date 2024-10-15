@@ -145,7 +145,7 @@ class _ClientsPageState extends State<ClientsPage> {
                             Text("OnBoard Date",style: TextStyle(
                                 fontWeight:FontWeight.bold
                             ),),
-                            Text(client.onboardDate.day.toString()+"-"+client.onboardDate.month.toString()+"-"+client.onboardDate.year.toString()),
+                            Text(client.onboardDate),
                           ],
                         ),
                         Column(

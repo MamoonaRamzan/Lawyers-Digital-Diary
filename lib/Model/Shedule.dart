@@ -2,7 +2,7 @@ class Schedule {
   String scheduleId;
   String caseId;
   String clientId;
-  DateTime dateTime;
+  String dateTime;
   String description; // meeting, court hearing, etc.
   String location;
   bool reminder;

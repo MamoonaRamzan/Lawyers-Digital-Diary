@@ -9,8 +9,6 @@ class SheduleTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Sort the list by date
-    schedules.sort((a, b) => a.dateTime.compareTo(b.dateTime));
 
     return ListView.builder(
       itemCount: schedules.length,
@@ -21,7 +19,7 @@ class SheduleTab extends StatelessWidget {
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Date: ${schedule.dateTime.day}-${schedule.dateTime.month}-${schedule.dateTime.year}'),
+              Text('Date: ${schedule.dateTime}'),
               Text('Location: ${schedule.location}'),
             ],
           ),

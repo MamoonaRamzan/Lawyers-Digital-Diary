@@ -166,7 +166,7 @@ class _CasesTabState extends State<CasesTab> {
                             Text("Start Date",style: TextStyle(
                                 fontWeight:FontWeight.bold
                             ),),
-                            Text(Case.startDate.day.toString()+"-"+Case.startDate.month.toString()+"-"+Case.startDate.year.toString()),
+                            Text(Case.startDate),
                           ],
                         ),
                       ],

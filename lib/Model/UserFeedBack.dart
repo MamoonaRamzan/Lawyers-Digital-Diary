@@ -2,7 +2,7 @@ class UserFeedback {
   String id;
   String name;
   String email;
-  DateTime date;
+  String date;
   double rating;
   String feedback;
 

@@ -67,7 +67,7 @@ class ClientCases extends StatelessWidget {
                         Text("Start Date",style: TextStyle(
                             fontWeight:FontWeight.bold
                         ),),
-                        Text(clientCase[index].startDate.day.toString()+"-"+clientCase[index].startDate.month.toString()+"-"+clientCase[index].startDate.year.toString()),
+                        Text(clientCase[index].startDate),
                       ],
                     ),
                     Row(

@@ -8,8 +8,8 @@ class Case {
   String judgeName;
   String caseDescription;
   String status; // open, closed, etc.
-  DateTime startDate;
-  List<DateTime> hearingDates;
+  String startDate;
+  List<String> hearingDates;
   String lawyerNotes;
 
   Case({

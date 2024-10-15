@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:lawyers_digital_diary/FirebaseServices/fetch_data.dart';
 import '../Model/UserFeedBack.dart'; // For formatting the date
 
 class FeedbackPage extends StatefulWidget {
@@ -8,29 +9,13 @@ class FeedbackPage extends StatefulWidget {
 }
 
 class _FeedbackPageState extends State<FeedbackPage> {
-  List<UserFeedback> feedbackList = [
-    UserFeedback(
-      id: '1',
-      name: 'John Doe',
-      email: 'john@example.com',
-      date: DateTime.now().subtract(Duration(days: 1)),
-      rating: 4.5,
-      feedback: 'Great app, very useful!',
-    ),
-    UserFeedback(
-      id: '2',
-      name: 'Jane Smith',
-      email: 'jane@example.com',
-      date: DateTime.now().subtract(Duration(days: 2)),
-      rating: 3.0,
-      feedback: 'Good but needs some improvements.',
-    ),
-  ];
+  final FetchData dataService = FetchData();
 
-  // Function to delete feedback
+  // Function to delete feedback (You would also need to delete from Firestore)
   void deleteFeedback(String id) {
     setState(() {
-      feedbackList.removeWhere((feedback) => feedback.id == id);
+      // Assuming feedbackList is a List, this function would be passed inside the FutureBuilder logic
+      // You need to implement Firestore deletion as well in your fetch_data.dart service.
     });
   }
 
@@ -40,49 +25,69 @@ class _FeedbackPageState extends State<FeedbackPage> {
       appBar: AppBar(
         title: Text('User Feedback'),
       ),
-      body: ListView.builder(
-        itemCount: feedbackList.length,
-        itemBuilder: (context, index) {
-          final feedback = feedbackList[index];
-          return Card(
-            margin: EdgeInsets.all(10),
-            child: ListTile(
-              title: Text(feedback.name),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Email: ${feedback.email}'),
-                  Text('Date: ${feedback.date.day.toString()}-${feedback.date.month.toString()}-${feedback.date.year.toString()}'),
-                  Row(
+      body: FutureBuilder<List<UserFeedback>>(
+        future: dataService.fetchUserFeedback(), // Fetching feedback from Firestore
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // While the data is loading
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            // In case of an error
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            // No data available
+            return Center(child: Text('No feedback available'));
+          }
+
+          // Data is available
+          final feedbackList = snapshot.data!;
+
+          return ListView.builder(
+            itemCount: feedbackList.length,
+            itemBuilder: (context, index) {
+              final feedback = feedbackList[index];
+              return Card(
+                margin: EdgeInsets.all(10),
+                child: ListTile(
+                  title: Text(feedback.name),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Rating: '),
-                      RatingBarIndicator(
-                        rating: feedback.rating,
-                        itemBuilder: (context, index) => Icon(
-                          Icons.star,
-                          color: Colors.amber,
-                        ),
-                        itemCount: 5,
-                        itemSize: 20.0,
-                        direction: Axis.horizontal,
+                      Text('Email: ${feedback.email}'),
+                      Text('Date: ${feedback.date}'),
+                      Row(
+                        children: [
+                          Text('Rating: '),
+                          RatingBarIndicator(
+                            rating: feedback.rating,
+                            itemBuilder: (context, index) => Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                            ),
+                            itemCount: 5,
+                            itemSize: 20.0,
+                            direction: Axis.horizontal,
+                          ),
+                        ],
                       ),
+                      Text('Feedback: ${feedback.feedback}'),
                     ],
                   ),
-                  Text('Feedback: ${feedback.feedback}'),
-                ],
-              ),
-              trailing: IconButton(
-                icon: Icon(Icons.delete),
-                onPressed: () {
-                  // Delete feedback
-                  deleteFeedback(feedback.id);
-                },
-              ),
-            ),
+                  trailing: IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () {
+                      // Delete feedback from UI and Firestore
+                      deleteFeedback(feedback.id);
+                    },
+                  ),
+                ),
+              );
+            },
           );
         },
       ),
     );
   }
 }
+
 

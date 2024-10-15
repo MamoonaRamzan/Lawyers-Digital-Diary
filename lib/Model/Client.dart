@@ -6,7 +6,7 @@ class Client {
   String phone;
   String address;
   String clientType;
-  DateTime onboardDate;
+  String onboardDate;
   List<Case> caseList;
 
   Client({
