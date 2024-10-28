@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lawyers_digital_diary/FirebaseServices/fetch_data.dart';
-import '../Model/Case.dart';
-import '../Model/Client.dart';
+import 'package:lawyers_digital_diary/FirebaseServices/lawyer_operations.dart';
 import '../Model/Lawyer.dart';
-import '../Model/Profile.dart';
-import '../Model/Shedule.dart';
 import 'lawyers_details.dart';
 
 class LawyersProfilePage extends StatefulWidget {
@@ -15,7 +11,7 @@ class LawyersProfilePage extends StatefulWidget {
 }
 
 class _LawyersProfilePageState extends State<LawyersProfilePage> {
-  FetchData data = FetchData();
+  LawyerOperations data = LawyerOperations();
   Future<List<Lawyer>>? lawyersFuture;
 
   // Search text controller
@@ -87,7 +83,7 @@ class _LawyersProfilePageState extends State<LawyersProfilePage> {
         future: lawyersFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator(color: Color(0xFF4DB6AC),));
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
@@ -108,15 +104,54 @@ class _LawyersProfilePageState extends State<LawyersProfilePage> {
                     ),
                     trailing: IconButton(
                       icon: Icon(Icons.delete),
-                      onPressed: () {
-                        setState(() {
-                          // Get the lawyer's email to remove from both lists
-                          final lawyerToRemove = _filteredLawyers[index];
+                      onPressed: () async {
+                        // Get the lawyer's ID to remove from Firestore
+                        final lawyerToRemove = _filteredLawyers[index];
 
-                          // Remove from both filtered and main lists
-                          _filteredLawyers.remove(lawyerToRemove);
-                          _lawyers.removeWhere((lawyer) => lawyer.profile.email == lawyerToRemove.profile.email);
-                        });
+                        // Show a confirmation dialog before deletion (optional)
+                        final confirmDelete = await showDialog<bool>(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Confirm Delete'),
+                              content: Text('Are you sure you want to delete ${lawyerToRemove.profile.name}?'),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: Text('Cancel'),
+                                  onPressed: () => Navigator.of(context).pop(false),
+                                ),
+                                TextButton(
+                                  child: Text('Delete'),
+                                  onPressed: () => Navigator.of(context).pop(true),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+
+                        // If the user confirms deletion
+                        if (confirmDelete == true) {
+                          try {
+                            // Call the deleteLawyer method from LawyerOperations
+                            await data.deleteLawyer(lawyerToRemove.id); // Use the correct ID for your lawyer object
+
+                            // Remove from both filtered and main lists
+                            setState(() {
+                              _filteredLawyers.remove(lawyerToRemove);
+                              _lawyers.removeWhere((lawyer) => lawyer.profile.email == lawyerToRemove.profile.email);
+                            });
+
+                            // Show success message
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Lawyer ${lawyerToRemove.profile.name} deleted successfully')),
+                            );
+                          } catch (e) {
+                            // Handle any errors during deletion
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error deleting lawyer: $e')),
+                            );
+                          }
+                        }
                       },
                     ),
                     title: Text(

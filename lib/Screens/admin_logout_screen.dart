@@ -53,9 +53,11 @@ class LogoutScreen extends StatelessWidget {
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
+
       ),
       elevation: 10,
       backgroundColor: Colors.white,
+      surfaceTintColor: Color(0xFF4DB6AC),
       child: Padding(
         padding: EdgeInsets.all(20.0),
         child: Column(
@@ -63,8 +65,8 @@ class LogoutScreen extends StatelessWidget {
           children: [
             Icon(
               Icons.exit_to_app,
-              size: 60,
-              color: Colors.redAccent,
+              size: 50,
+              color: Colors.grey
             ),
             SizedBox(height: 20),
             Text(
@@ -72,7 +74,7 @@ class LogoutScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                  color: Color(0xFF4DB6AC)
               ),
               textAlign: TextAlign.center,
             ),
@@ -82,9 +84,9 @@ class LogoutScreen extends StatelessWidget {
               children: [
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
+                    backgroundColor: Color(0xFF4DB6AC),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(15),
                     ),
                   ),
                   onPressed: () {
@@ -106,9 +108,9 @@ class LogoutScreen extends StatelessWidget {
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent,
+                    backgroundColor: Colors.grey,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   ),
                   onPressed: () {

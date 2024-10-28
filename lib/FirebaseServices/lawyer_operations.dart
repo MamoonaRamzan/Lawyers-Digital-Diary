@@ -1,15 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import '../Model/Case.dart';
 import '../Model/Client.dart';
 import '../Model/Lawyer.dart';
-import '../Model/Package.dart';
 import '../Model/Profile.dart';
 import '../Model/Shedule.dart';
-import '../Model/UserFeedBack.dart';
 
-class FetchData{
 
+class LawyerOperations {
+  final CollectionReference lawyerCollection =
+  FirebaseFirestore.instance.collection('Lawyer'); // Ensure this matches Firestore
+
+  // Fetch all lawyers
   Future<List<Lawyer>> fetchLawyers() async {
     List<Lawyer> lawyersList = [];
 
@@ -25,8 +26,9 @@ class FetchData{
       var cases = await fetchCases(lawyerDoc.id);
       var schedule = await fetchSchedule(lawyerDoc.id);
 
-      // Create Lawyer object
+      // Create Lawyer object with document ID
       Lawyer lawyer = Lawyer(
+        id: lawyerDoc.id, // Capture the document ID here
         profile: profile,
         clients: clients,
         cases: cases,
@@ -38,14 +40,13 @@ class FetchData{
 
     return lawyersList;
   }
+  // Fetch profile of a lawyer
   Future<Profile> fetchProfile(String lawyerId) async {
-    DocumentSnapshot profileDoc = await FirebaseFirestore.instance
-        .collection('Lawyer')
+    DocumentSnapshot profileDoc = await lawyerCollection
         .doc(lawyerId)
         .collection('Profile')
-        .doc('LSZgXc185fkM7o5S11iY')
+        .doc('LSZgXc185fkM7o5S11iY') // Replace with your logic to get the profile ID
         .get(); // To inspect the document contents
-
 
     return Profile(
       name: profileDoc['name'],
@@ -59,11 +60,12 @@ class FetchData{
       package: profileDoc['package'],
     );
   }
+
+  // Fetch clients of a lawyer
   Future<List<Client>> fetchClients(String lawyerId) async {
     List<Client> clientsList = [];
 
-    QuerySnapshot clientsSnapshot = await FirebaseFirestore.instance
-        .collection('Lawyer')
+    QuerySnapshot clientsSnapshot = await lawyerCollection
         .doc(lawyerId)
         .collection('clients')
         .get();
@@ -89,6 +91,7 @@ class FetchData{
     return clientsList;
   }
 
+  // Fetch cases list of a client
   Future<List<Case>> fetchCaseList(QueryDocumentSnapshot clientDoc) async {
     List<Case> caseList = [];
     List<DocumentReference> caseRefs = List<DocumentReference>.from(clientDoc['caseList']);
@@ -116,11 +119,12 @@ class FetchData{
 
     return caseList;
   }
+
+  // Fetch cases of a lawyer
   Future<List<Case>> fetchCases(String lawyerId) async {
     List<Case> casesList = [];
 
-    QuerySnapshot casesSnapshot = await FirebaseFirestore.instance
-        .collection('Lawyer')
+    QuerySnapshot casesSnapshot = await lawyerCollection
         .doc(lawyerId)
         .collection('cases')
         .get();
@@ -146,14 +150,15 @@ class FetchData{
 
     return casesList;
   }
+
+  // Fetch schedule of a lawyer
   Future<List<Schedule>> fetchSchedule(String lawyerId) async {
     List<Schedule> scheduleList = [];
 
     // Fetch schedule collection for a lawyer
-    QuerySnapshot scheduleSnapshot = await FirebaseFirestore.instance
-        .collection('Lawyer')
+    QuerySnapshot scheduleSnapshot = await lawyerCollection
         .doc(lawyerId)
-        .collection('shedule')
+        .collection('shedule') // Ensure the collection name is correct
         .get();
 
     // Debugging: print the number of schedule docs fetched
@@ -171,7 +176,6 @@ class FetchData{
             data.containsKey('description') &&
             data.containsKey('location') &&
             data.containsKey('reminder')) {
-
           scheduleList.add(
             Schedule(
               scheduleId: data['scheduleId'],
@@ -193,89 +197,42 @@ class FetchData{
 
     return scheduleList;
   }
-  Future<List<Package>> fetchPackages() async {
-    List<Package> packageList = [];
 
-    // Fetch the 'package' collection
-    QuerySnapshot packageSnapshot = await FirebaseFirestore.instance
-        .collection('package')
-        .get();
+  // Delete a lawyer from Firestore using its document ID
+  Future<void> deleteLawyer(String lawyerId) async {
+    try {
+      // Delete the lawyer document
+      await lawyerCollection.doc(lawyerId).delete();
+      print('Lawyer with ID $lawyerId deleted successfully');
 
-    // Debugging: print the number of package docs fetched
-    print('Number of package documents: ${packageSnapshot.docs.length}');
-
-    for (var packageDoc in packageSnapshot.docs) {
-      if (packageDoc.exists) {
-        // Check if the document contains the necessary fields
-        Map<String, dynamic>? data = packageDoc.data() as Map<String, dynamic>?;
-        if (data != null &&
-            data.containsKey('id') &&
-            data.containsKey('name') &&
-            data.containsKey('price') &&
-            data.containsKey('features')) {
-
-          packageList.add(
-            Package(
-              id: data['id'], // Assuming 'id' is stored as a string
-              name: data['name'],
-              price: (data['price'] ?? 0.0).toDouble(),
-              features: List<String>.from(data['features'] ?? []),
-            ),
-          );
-        } else {
-          print('Missing required fields in package document: ${packageDoc.id}');
-        }
-      } else {
-        print('Package document does not exist: ${packageDoc.id}');
-      }
+      // Optionally, delete associated subcollections (Profile, clients, cases, schedule)
+      await deleteLawyerSubcollections(lawyerId);
+    } catch (e) {
+      print('Error deleting lawyer with ID $lawyerId: $e');
     }
-
-    return packageList;
-  }
-  Future<List<UserFeedback>> fetchUserFeedback() async {
-    List<UserFeedback> feedbackList = [];
-
-    // Fetch the 'userfeedback' collection
-    QuerySnapshot feedbackSnapshot = await FirebaseFirestore.instance
-        .collection('userfeedback')
-        .get();
-
-    // Debugging: print the number of feedback docs fetched
-    print('Number of feedback documents: ${feedbackSnapshot.docs.length}');
-
-    for (var feedbackDoc in feedbackSnapshot.docs) {
-      if (feedbackDoc.exists) {
-        // Check if the document contains the necessary fields
-        Map<String, dynamic>? data = feedbackDoc.data() as Map<String, dynamic>?;
-        if (data != null &&
-            data.containsKey('date') &&
-            data.containsKey('email') &&
-            data.containsKey('feedback') &&
-            data.containsKey('id') &&
-            data.containsKey('name') &&
-            data.containsKey('rating')) {
-
-          feedbackList.add(
-            UserFeedback(
-              date: data['date'],
-              email: data['email'],
-              feedback: data['feedback'],
-              id: data['id'],
-              name: data['name'],
-              rating: (data['rating'] ?? 0.0).toDouble(),
-            ),
-          );
-        } else {
-          print('Missing required fields in feedback document: ${feedbackDoc.id}');
-        }
-      } else {
-        print('Feedback document does not exist: ${feedbackDoc.id}');
-      }
-    }
-
-    return feedbackList;
   }
 
+  // Optional: Method to delete associated subcollections
+  Future<void> deleteLawyerSubcollections(String lawyerId) async {
+    // Delete Profile
+    await lawyerCollection.doc(lawyerId).collection('Profile').doc('LSZgXc185fkM7o5S11iY').delete();
 
+    // Delete clients collection
+    var clientsSnapshot = await lawyerCollection.doc(lawyerId).collection('clients').get();
+    for (var clientDoc in clientsSnapshot.docs) {
+      await clientDoc.reference.delete(); // Delete each client document
+    }
 
+    // Delete cases collection
+    var casesSnapshot = await lawyerCollection.doc(lawyerId).collection('cases').get();
+    for (var caseDoc in casesSnapshot.docs) {
+      await caseDoc.reference.delete(); // Delete each case document
+    }
+
+    // Delete schedule collection
+    var scheduleSnapshot = await lawyerCollection.doc(lawyerId).collection('schedule').get();
+    for (var scheduleDoc in scheduleSnapshot.docs) {
+      await scheduleDoc.reference.delete(); // Delete each schedule document
+    }
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lawyers_digital_diary/FirebaseServices/fetch_data.dart';
+import 'package:lawyers_digital_diary/FirebaseServices/lawyer_operations.dart';
+import 'package:lawyers_digital_diary/FirebaseServices/package_operations.dart';
 import '../Model/Package.dart';
 
 class PackagesPage extends StatefulWidget {
@@ -8,54 +9,63 @@ class PackagesPage extends StatefulWidget {
 }
 
 class _PackagesPageState extends State<PackagesPage> {
-  FetchData data = FetchData();
+  final PackageOperation packageOperation = PackageOperation();
 
-  // Function to update a pricing plan
-  void updatePricingPlan(Package updatedPlan) {
-    setState(() {
-      // You would want to use a state management solution or update the data in Firestore
-    });
+  void updatePricingPlan(String docId, Package updatedPlan) async {
+    await packageOperation.updatePackage(docId, updatedPlan);
+    setState(() {});
   }
 
-  // Function to delete a pricing plan
-  void deletePricingPlan(String id) {
-    setState(() {
-      // You would want to implement the deletion logic in Firestore as well
-    });
+  void deletePricingPlan(String docId) async {
+    await packageOperation.deletePackage(docId);
+    setState(() {});
   }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Pricing Plans'),
+        centerTitle: true,
       ),
       body: FutureBuilder<List<Package>>(
-        future: data.fetchPackages(), // Fetch packages here
+        future: packageOperation.fetchPackages(), // Fetch packages from Firestore
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator(color: Color(0xFF4DB6AC)));
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(child: Text('No packages available.'));
           }
 
-          final packages = snapshot.data!; // Get the data
+          final packages = snapshot.data!;
 
           return ListView.builder(
             itemCount: packages.length,
             itemBuilder: (context, index) {
               final plan = packages[index];
+
               return Card(
                 child: ListTile(
-                  title: Text(plan.name),
-                  subtitle: Text('\$${plan.price.toStringAsFixed(2)}'),
+                  title: Text(plan.name,
+                    style: TextStyle(
+                    color: Color(0xFF4DB6AC),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold
+                  ),),
+                  subtitle: Text('\$${plan.price.toStringAsFixed(2)}',
+                      style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.normal
+                      )
+                  ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: Icon(Icons.edit),
+                        icon: Icon(Icons.edit,color: Color(0xFF4DB6AC),),
                         onPressed: () {
                           _showEditDialog(plan);
                         },
@@ -63,7 +73,7 @@ class _PackagesPageState extends State<PackagesPage> {
                       IconButton(
                         icon: Icon(Icons.delete),
                         onPressed: () {
-                          deletePricingPlan(plan.id.toString());
+                          deletePricingPlan(plan.docId); // Update docId usage as needed
                         },
                       ),
                     ],
@@ -75,6 +85,8 @@ class _PackagesPageState extends State<PackagesPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Color(0xFF4DB6AC),
+        foregroundColor: Colors.white,
         onPressed: () {
           _showAddDialog();
         },
@@ -83,16 +95,19 @@ class _PackagesPageState extends State<PackagesPage> {
     );
   }
 
-  // Dialog to add new pricing plan
+  // Dialog to add a new pricing plan with features
   void _showAddDialog() {
     String name = '';
     double price = 0.0;
     List<String> features = [];
+    TextEditingController featureController = TextEditingController();
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
+          surfaceTintColor: Color(0xFF4DB6AC),
           title: Text('Add Pricing Plan'),
           content: SingleChildScrollView(
             child: Column(
@@ -103,25 +118,57 @@ class _PackagesPageState extends State<PackagesPage> {
                   decoration: InputDecoration(labelText: 'Plan Name'),
                 ),
                 TextField(
-                  onChanged: (value) => price = double.tryParse(value) ?? 0.0,
+                  onChanged: (value) {
+                    price = double.tryParse(value) ?? 0.0; // Update price on input
+                    print('Price: $price'); // Debug statement
+                  },
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(labelText: 'Price'),
                 ),
-                // Add more input for features or handle differently
+                TextField(
+                  controller: featureController,
+                  decoration: InputDecoration(labelText: 'Features (comma separated)'),
+                  // No need for onSubmitted here
+                ),
               ],
             ),
           ),
           actions: [
             TextButton(
-              onPressed: () {
-                if (name.isNotEmpty) {
-                  setState(() {
-                    // You would want to implement the logic to add the new plan to Firestore here
-                  });
+              onPressed: () async {
+                // Set features when the Add button is pressed
+                features = featureController.text.split(',')
+                    .map((feature) => feature.trim())
+                    .where((feature) => feature.isNotEmpty)
+                    .toList();
+
+                print('Name: $name, Price: $price, Features: $features'); // Debug statement
+
+                // Validation check
+                if (name.isNotEmpty && price > 0 && features.isNotEmpty) {
+                  try {
+                    // Call addPackage and wait for the result
+                    await packageOperation.addPackage(Package(
+                      docId: '',
+                      name: name,
+                      price: price,
+                      features: features,
+                    ));
+                    print('Package added: $name, Price: $price, Features: $features'); // Debug statement
+                    setState(() {}); // Update UI
+                    Navigator.of(context).pop(); // Close the dialog
+                  } catch (e) {
+                    print('Error adding package: $e'); // Catch any errors
+                  }
+                } else {
+                  print('Please enter valid details'); // Inform user to enter valid data
                 }
-                Navigator.of(context).pop();
               },
               child: Text('Add'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(), // Close dialog without adding
+              child: Text('Cancel'),
             ),
           ],
         );
@@ -133,11 +180,17 @@ class _PackagesPageState extends State<PackagesPage> {
   void _showEditDialog(Package package) {
     String name = package.name;
     double price = package.price;
+    List<String> features = List.from(package.features);
+
+    TextEditingController featureController = TextEditingController();
+    featureController.text = features.join(', ');
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
+          surfaceTintColor: Color(0xFF4DB6AC),
           title: Text('Edit Pricing Plan'),
           content: SingleChildScrollView(
             child: Column(
@@ -154,13 +207,25 @@ class _PackagesPageState extends State<PackagesPage> {
                   decoration: InputDecoration(labelText: 'Price'),
                   controller: TextEditingController(text: package.price.toString()),
                 ),
+                TextField(
+                  controller: featureController,
+                  decoration: InputDecoration(labelText: 'Features (comma separated)'),
+                  onSubmitted: (value) {
+                    features = value.split(',').map((feature) => feature.trim()).toList();
+                  },
+                ),
               ],
             ),
           ),
           actions: [
             TextButton(
               onPressed: () {
-                updatePricingPlan(Package(id: package.id, name: name, price: price, features: package.features));
+                updatePricingPlan(package.docId, Package(
+                  docId: package.docId,
+                  name: name,
+                  price: price,
+                  features: features,
+                ));
                 Navigator.of(context).pop();
               },
               child: Text('Update'),
@@ -171,5 +236,11 @@ class _PackagesPageState extends State<PackagesPage> {
     );
   }
 }
+
+
+
+
+
+
 
 

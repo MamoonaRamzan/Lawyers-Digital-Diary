@@ -19,8 +19,18 @@ class SheduleTab extends StatelessWidget {
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Date: ${schedule.dateTime}'),
-              Text('Location: ${schedule.location}'),
+              Text('Date: ${schedule.dateTime}',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold
+                  ),
+              ),
+              Text('Location: ${schedule.location}',
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold
+                ),
+              ),
             ],
           ),
           trailing: schedule.reminder
